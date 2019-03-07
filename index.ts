@@ -15,6 +15,14 @@ function logBlob(blobString: string) {
   });
 }
 
+function getAll() {
+  return new Promise<any[]>((res, rej) => {
+    db.all("SELECT * FROM blobs", (err, rows) => {
+      res(rows);
+    })
+  });
+}
+
 const app = new koa();
 const router = new koaRouter();
 
@@ -22,9 +30,18 @@ router.get('/', (ctx, next) => {
   ctx.body = "hi";
 });
 
-router.post('/blobs', async (ctx, next) => {
+router.post('/logs/blobs', async (ctx, next) => {
   await logBlob(ctx.request.rawBody);
   ctx.body = "thanks";
+});
+
+router.get('/logs/all', async (ctx, next) => {
+  var blobs: any[] = await getAll();
+  var asObjects = blobs.map(b => {
+    try { return JSON.parse(b.blob); }
+    catch (e) { }
+  });
+  ctx.body = JSON.stringify(asObjects);
 });
 
 app.use(cors());
