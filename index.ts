@@ -4,7 +4,7 @@ import * as bodyParser from 'koa-bodyparser';
 import * as cors from '@koa/cors';
 import * as mongo from 'mongodb';
 
-const dbHost = "mongodb://mongo"; // hostname set by docker compose
+const dbHost = "mongodb://" + process.env.MONGODB_USER + ":" + process.env.MONGODB_PWD + "@mongo"; // hostname set by docker compose
 const dbName = "gamepads";
 
 const client = new mongo.MongoClient(dbHost);
