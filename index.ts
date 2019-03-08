@@ -2,22 +2,27 @@ import * as koa from 'koa';
 import * as koaRouter from 'koa-router';
 import * as bodyParser from 'koa-bodyparser';
 import * as cors from '@koa/cors';
+import * as mongo from 'mongodb';
+
+const dbHost = "mongodb://mongo"; // hostname set by docker compose
+const dbName = "gamepads";
+
+const client = new mongo.MongoClient(dbHost);
+client.connect();
+
+function logBlob(logItem: any) {
+  var db = client.db(dbName);
+  var coll = db.collection('gamepads');
 
 
-function logBlob(blobString: string) {
-  // return new Promise((res, rej) => {
-  //   var stmt = db.prepare("INSERT INTO blobs (blob) VALUES (?)");
-  //   stmt.run(blobString);
-  //   stmt.finalize(() => res());
-  // });
+  return coll.insert(logItem);
 }
 
 function getAll() {
-  // return new Promise<any[]>((res, rej) => {
-  //   db.all("SELECT * FROM blobs", (err, rows) => {
-  //     res(rows);
-  //   })
-  // });
+  var db = client.db(dbName);
+  var coll = db.collection('gamepads');
+
+  return coll.find().toArray();
 }
 
 const app = new koa();
@@ -28,18 +33,18 @@ router.get('/', (ctx, next) => {
 });
 
 router.post('/logs/blobs', async (ctx, next) => {
-  await logBlob(ctx.request.rawBody);
+  var logItem = {
+    data: JSON.parse(ctx.request.rawBody),
+    ip: ctx.request.ip,
+    headers: ctx.request.headers
+  }
+  await logBlob(logItem);
   ctx.body = "thanks";
 });
 
 router.get('/logs/all', async (ctx, next) => {
-  // var blobs: any[] = await getAll();
-  // var asObjects = blobs.map(b => {
-  //   try { return JSON.parse(b.blob); }
-  //   catch (e) { }
-  // });
-  // ctx.body = JSON.stringify(asObjects);
-  ctx.body = "hi";
+  var blobs: any[] = await getAll();
+  ctx.body = JSON.stringify(blobs);
 });
 
 app.use(cors());
