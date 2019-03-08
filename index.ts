@@ -12,17 +12,37 @@ client.connect();
 
 function logBlob(logItem: any) {
   var db = client.db(dbName);
-  var coll = db.collection('gamepads');
 
-
-  return coll.insert(logItem);
+  return db.collection('gamepads').insert(logItem);
 }
 
 function getAll() {
   var db = client.db(dbName);
-  var coll = db.collection('gamepads');
 
-  return coll.find().toArray();
+  return db.collection('gamepads').find().toArray();
+}
+
+function getMatrix() {
+  var db = client.db(dbName);
+
+  return db.collection('gamepads').aggregate([
+    {
+      $match: {
+        "data.gamepad.id": { $exists: 1 }
+      }
+    },
+    {
+      $group: {
+        _id: { gamepadId: "$data.gamepad.id", 'user-agent': "$headers.user-agent" },
+        total: { $sum: 1 }
+      }
+    },
+    {
+      $sort: {
+        total: 1
+      }
+    }
+  ]).toArray();
 }
 
 const app = new koa();
@@ -44,6 +64,11 @@ router.post('/logs/blobs', async (ctx, next) => {
 
 router.get('/logs/all', async (ctx, next) => {
   var blobs: any[] = await getAll();
+  ctx.body = JSON.stringify(blobs);
+});
+
+router.get('/logs/matrix', async (ctx, next) => {
+  var blobs: any[] = await getMatrix();
   ctx.body = JSON.stringify(blobs);
 });
 
