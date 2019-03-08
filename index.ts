@@ -5,7 +5,7 @@ import * as sqlite from 'sqlite3';
 import * as cors from '@koa/cors';
 
 const db = new sqlite.Database('db.db');
-db.run("CREATE TABLE IF NOT EXISTS blobs (blob TEXT)");
+db.run("CREATE TABLE IF NOT EXISTS blobs (blob TEXT, tstamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP)");
 
 function logBlob(blobString: string) {
   return new Promise((res, rej) => {
