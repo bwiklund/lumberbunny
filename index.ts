@@ -4,6 +4,7 @@ import * as bodyParser from 'koa-bodyparser';
 import * as cors from '@koa/cors';
 import * as mongo from 'mongodb';
 import * as useragent from 'useragent';
+import * as apicache from "apicache";
 
 const dbHost = "mongodb://" + process.env.MONGODB_USER + ":" + process.env.MONGODB_PWD + "@mongo"; // hostname set by docker compose
 const dbName = "gamepads";
@@ -87,7 +88,7 @@ router.get('/logs/all', async (ctx, next) => {
   ctx.body = JSON.stringify(blobs);
 });
 
-router.get('/logs/matrix', async (ctx, next) => {
+router.get('/logs/matrix', apicache.middleware("30 minutes"), async (ctx, next) => {
   var blobs = await getMatrix();
   ctx.body = JSON.stringify(blobs);
 });
