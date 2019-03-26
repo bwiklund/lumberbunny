@@ -1,4 +1,4 @@
-import * as bodyparser from 'body-parser';
+import * as bodyParser from 'body-parser';
 import * as cors from "cors";
 import * as express from "express";
 import * as mongo from 'mongodb';
@@ -58,7 +58,8 @@ async function getMatrix() {
 }
 
 const app = express();
-app.use(bodyparser());
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
 app.use(cors());
 
 app.get('/', (req, res) => {
