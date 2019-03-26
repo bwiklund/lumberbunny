@@ -8,7 +8,7 @@ const dbHost = "mongodb://" + process.env.MONGODB_USER + ":" + process.env.MONGO
 const dbName = "gamepads";
 
 const client = new mongo.MongoClient(dbHost);
-client.connect();
+client.connect(() => updateCache());
 
 function logBlob(logItem: any) {
   var db = client.db(dbName);
@@ -83,9 +83,9 @@ app.get('/logs/all', async (req, res) => {
 
 // simple cache mechanism that never delays a request...
 var matrixCache = "";
-async function updateMatrixCache() { matrixCache = JSON.stringify(await getMatrix()); }
-setInterval(updateMatrixCache, 10 * 60 * 1000);
-updateMatrixCache();
+async function updateCache() { matrixCache = JSON.stringify(await getMatrix()); }
+setInterval(updateCache, 10 * 60 * 1000);
+updateCache();
 
 app.get('/logs/matrix', async (req, res) => {
   res.send(matrixCache);
