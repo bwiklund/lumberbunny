@@ -3,6 +3,7 @@ import * as koaRouter from 'koa-router';
 import * as bodyParser from 'koa-bodyparser';
 import * as cors from '@koa/cors';
 import * as mongo from 'mongodb';
+import * as useragent from 'useragent';
 
 const dbHost = "mongodb://" + process.env.MONGODB_USER + ":" + process.env.MONGODB_PWD + "@mongo"; // hostname set by docker compose
 const dbName = "gamepads";
@@ -22,10 +23,10 @@ function getAll() {
   return db.collection('gamepads').find().toArray();
 }
 
-function getMatrix() {
+async function getMatrix() {
   var db = client.db(dbName);
 
-  return db.collection('gamepads').aggregate([
+  var raw = await db.collection('gamepads').aggregate([
     {
       $match: {
         "data.gamepad.id": { $exists: 1 }
@@ -43,6 +44,22 @@ function getMatrix() {
       }
     }
   ]).toArray();
+
+  var byUserAgent = {}
+  raw.forEach((r) => {
+    var ua = useragent.parse(r._id['user-agent']).toAgent();
+    var gamepadId = r._id.gamepadId;
+
+    // simple count
+    if (!byUserAgent[ua]) byUserAgent[ua] = 0;
+    byUserAgent[ua] += r.total;
+
+    // by os and gamepad
+    //if (!byUserAgent[ua]) byUserAgent[ua] = {};
+    // if (!byUserAgent[ua][gamepadId]) byUserAgent[ua][gamepadId] = 0;
+    // byUserAgent[ua][gamepadId] += r.total;
+  })
+  return byUserAgent;
 }
 
 const app = new koa();
@@ -68,7 +85,7 @@ router.get('/logs/all', async (ctx, next) => {
 });
 
 router.get('/logs/matrix', async (ctx, next) => {
-  var blobs: any[] = await getMatrix();
+  var blobs = await getMatrix();
   ctx.body = JSON.stringify(blobs);
 });
 
