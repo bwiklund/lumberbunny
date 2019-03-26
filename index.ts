@@ -58,6 +58,8 @@ async function getMatrix() {
 }
 
 const app = express();
+app.use(bodyparser());
+app.use(cors());
 
 app.get('/', (req, res) => {
   res.send("hi");
@@ -79,7 +81,7 @@ app.get('/logs/all', async (req, res) => {
 });
 
 // simple cache mechanism that never delays a request...
-var matrixCache = {};
+var matrixCache = "";
 async function updateMatrixCache() { matrixCache = JSON.stringify(await getMatrix()); }
 setInterval(updateMatrixCache, 10 * 60 * 1000);
 updateMatrixCache();
@@ -87,8 +89,5 @@ updateMatrixCache();
 app.get('/logs/matrix', async (req, res) => {
   res.send(matrixCache);
 });
-
-app.use(cors());
-app.use(bodyparser());
 
 app.listen(3001);
