@@ -48,11 +48,14 @@ async function getMatrix() {
   var byUserAgent = {}
   raw.forEach((r) => {
     var ua = useragent.parse(r._id['user-agent']).toAgent();
+    var json = useragent.parse(r._id['user-agent']).toJSON();
+
     var gamepadId = r._id.gamepadId;
 
     // simple count
-    if (!byUserAgent[ua]) byUserAgent[ua] = 0;
-    byUserAgent[ua] += r.total;
+    if (!byUserAgent[json.family]) byUserAgent[json.family] = {};
+    if (!byUserAgent[json.family][json.major]) byUserAgent[json.family][json.major] = 0;
+    byUserAgent[json.family][json.major] += r.total;
 
     // by os and gamepad
     //if (!byUserAgent[ua]) byUserAgent[ua] = {};
