@@ -12,5 +12,7 @@ services:
   mongo:
     image: "mongo"
     command: [--auth]
+    env_file:
+      - .env
     volumes:
       - "../db:/data/db"

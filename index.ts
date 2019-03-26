@@ -1,10 +1,8 @@
-import * as koa from 'koa';
-import * as koaRouter from 'koa-router';
-import * as bodyParser from 'koa-bodyparser';
-import * as cors from '@koa/cors';
+import * as bodyparser from 'body-parser';
+import * as cors from "cors";
+import * as express from "express";
 import * as mongo from 'mongodb';
 import * as useragent from 'useragent';
-import * as apicache from "apicache";
 
 const dbHost = "mongodb://" + process.env.MONGODB_USER + ":" + process.env.MONGODB_PWD + "@mongo"; // hostname set by docker compose
 const dbName = "gamepads";
@@ -66,36 +64,33 @@ async function getMatrix() {
   return byUserAgent;
 }
 
-const app = new koa();
-const router = new koaRouter();
+const app = express();
 
-router.get('/', (ctx, next) => {
-  ctx.body = "hi";
+app.get('/', (req, res) => {
+  res.send("hi");
 });
 
-router.post('/logs/blobs', async (ctx, next) => {
+app.post('/logs/blobs', async (req, res) => {
   var logItem = {
-    data: JSON.parse(ctx.request.rawBody),
-    ip: ctx.request.ip,
-    headers: ctx.request.headers
+    data: JSON.parse(req.body),
+    ip: req.ip,
+    headers: req.headers
   }
   await logBlob(logItem);
-  ctx.body = "thanks";
+  res.send("thanks");
 });
 
-router.get('/logs/all', async (ctx, next) => {
+app.get('/logs/all', async (req, res) => {
   var blobs: any[] = await getAll();
-  ctx.body = JSON.stringify(blobs);
+  res.send(JSON.stringify(blobs));
 });
 
-router.get('/logs/matrix', apicache.middleware("30 minutes"), async (ctx, next) => {
+app.get('/logs/matrix', async (req, res) => {
   var blobs = await getMatrix();
-  ctx.body = JSON.stringify(blobs);
+  res.send(JSON.stringify(blobs));
 });
 
 app.use(cors());
-app.use(bodyParser());
-app.use(router.routes());
-app.use(router.allowedMethods);
+app.use(bodyparser());
 
 app.listen(3001);

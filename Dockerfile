@@ -1,5 +1,9 @@
 FROM node:11-alpine
-ADD . /code
 WORKDIR /code
+
+ADD package.json .
 RUN npm install
+
+ADD . .
+
 CMD ["npm", "start"]
