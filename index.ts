@@ -12,13 +12,11 @@ client.connect();
 
 function logBlob(logItem: any) {
   var db = client.db(dbName);
-
   return db.collection('gamepads').insert(logItem);
 }
 
 function getAll() {
   var db = client.db(dbName);
-
   return db.collection('gamepads').find().toArray();
 }
 
@@ -51,15 +49,10 @@ async function getMatrix() {
 
     var gamepadId = r._id.gamepadId;
 
-    // simple count
     if (!byUserAgent[json.family]) byUserAgent[json.family] = {};
     if (!byUserAgent[json.family][json.major]) byUserAgent[json.family][json.major] = 0;
     byUserAgent[json.family][json.major] += r.total;
 
-    // by os and gamepad
-    //if (!byUserAgent[ua]) byUserAgent[ua] = {};
-    // if (!byUserAgent[ua][gamepadId]) byUserAgent[ua][gamepadId] = 0;
-    // byUserAgent[ua][gamepadId] += r.total;
   })
   return byUserAgent;
 }
@@ -85,9 +78,14 @@ app.get('/logs/all', async (req, res) => {
   res.send(JSON.stringify(blobs));
 });
 
+// simple cache mechanism that never delays a request...
+var matrixCache = {};
+async function updateMatrixCache() { matrixCache = JSON.stringify(await getMatrix()); }
+setInterval(updateMatrixCache, 10 * 60 * 1000);
+updateMatrixCache();
+
 app.get('/logs/matrix', async (req, res) => {
-  var blobs = await getMatrix();
-  res.send(JSON.stringify(blobs));
+  res.send(matrixCache);
 });
 
 app.use(cors());
