@@ -1,6 +1,6 @@
 import * as bodyParser from 'body-parser';
-import * as cors from "cors";
-import * as express from "express";
+import cors from "cors";
+import express from "express";
 import * as mongo from 'mongodb';
 import * as useragent from 'useragent';
 
@@ -42,7 +42,7 @@ async function getMatrix() {
     }
   ]).toArray();
 
-  var byUserAgent = {}
+  var byUserAgent: {[s:string]: {[s:string]: number}} = {}
   raw.forEach((r) => {
     var ua = useragent.parse(r._id['user-agent']).toAgent();
     var json = useragent.parse(r._id['user-agent']).toJSON();
