@@ -68,7 +68,7 @@ app.get('/', (req, res) => {
 
 app.post('/logs/blobs', async (req, res) => {
   var logItem = {
-    data: JSON.parse(req.body),
+    data: req.body,
     ip: req.ip,
     headers: req.headers
   }
