@@ -25,6 +25,29 @@ function getAll() {
   return db.collection('gamepads').find().toArray();
 }
 
+async function getControllers() {
+  var db = client.db(dbName);
+
+  var raw = await db.collection('gamepads').aggregate([
+    {
+      $match: {
+        "data.gamepad.id": { $exists: 1 }
+      }
+    },
+    {
+      $group: {
+        _id: "$data.gamepad.id",
+        total: { $sum: 1 }
+      }
+    },
+    {
+      $sort: {
+        total: 1
+      }
+    }
+  ]).toArray();
+}
+
 async function getMatrix() {
   var db = client.db(dbName);
 
@@ -88,11 +111,18 @@ app.get('/logs/all', async (req, res) => {
 
 // simple cache mechanism that never delays a request...
 var matrixCache = "";
-async function updateCache() { matrixCache = JSON.stringify(await getMatrix()); }
-
+var controllersCache = "";
+async function updateCache() {
+  matrixCache = JSON.stringify(await getMatrix());
+  controllersCache = JSON.stringify(await getControllers());
+}
 
 app.get('/logs/matrix', async (req, res) => {
   res.send(matrixCache);
+});
+
+app.get('/logs/controllers', async (req, res) => {
+  res.send(controllersCache);
 });
 
 app.listen(3001);
