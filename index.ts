@@ -46,6 +46,8 @@ async function getControllers() {
       }
     }
   ]).toArray();
+
+  return raw;
 }
 
 async function getMatrix() {
