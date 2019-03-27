@@ -10,9 +10,9 @@ const dbName = "gamepads";
 const client = new mongo.MongoClient(dbHost);
 client.connect(() => updateCache());
 
-function logBlob(logItem: any) {
+function logBlob(logItem: {}) {
   var db = client.db(dbName);
-  return db.collection('gamepads').insert(logItem);
+  return db.collection('gamepads').insertOne(logItem);
 }
 
 function getAll() {
@@ -68,7 +68,7 @@ app.get('/', (req, res) => {
 
 app.post('/logs/blobs', async (req, res) => {
   var logItem = {
-    data: req.body,
+    data: JSON.parse(req.body),
     ip: req.ip,
     headers: req.headers
   }
