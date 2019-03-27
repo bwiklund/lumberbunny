@@ -42,7 +42,7 @@ async function getControllers() {
     },
     {
       $sort: {
-        total: 1
+        total: -1
       }
     }
   ]).toArray();
