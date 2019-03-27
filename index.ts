@@ -71,7 +71,7 @@ app.get('/', (req, res) => {
 
 app.post('/logs/blobs', async (req, res) => {
   var logItem = {
-    data: req.body,
+    data: JSON.parse(req.body),
     ip: req.ip,
     headers: req.headers
   }
@@ -94,3 +94,4 @@ app.get('/logs/matrix', async (req, res) => {
 });
 
 app.listen(3001);
+
