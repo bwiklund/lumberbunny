@@ -7,6 +7,8 @@ import * as useragent from 'useragent';
 const dbHost = "mongodb://" + process.env.MONGODB_USER + ":" + process.env.MONGODB_PWD + "@mongo"; // hostname set by docker compose
 const dbName = "gamepads";
 
+interface BrowserSupportData { [s: string]: { [s: string]: number } };
+
 const client = new mongo.MongoClient(dbHost);
 client.connect(() => {
   updateCache();
@@ -45,7 +47,7 @@ async function getMatrix() {
     }
   ]).toArray();
 
-  var byUserAgent: { [s: string]: { [s: string]: number } } = {}
+  var byUserAgent: BrowserSupportData = {}
   raw.forEach((r) => {
     var ua = useragent.parse(r._id['user-agent']).toAgent();
     var json = useragent.parse(r._id['user-agent']).toJSON();
