@@ -4,6 +4,10 @@ import express from "express";
 import * as mongo from 'mongodb';
 import * as useragent from 'useragent';
 
+process.on('unhandledRejection', (reason: any, promise) => {
+  console.log('Unhandled Rejection at:', reason ? reason.stack : reason);
+});
+
 const dbHost = "mongodb://" + process.env.MONGODB_USER + ":" + process.env.MONGODB_PWD + "@mongo"; // hostname set by docker compose
 const dbName = "gamepads";
 
