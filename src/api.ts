@@ -15,8 +15,8 @@ client.connect(() => {
 });
 
 export const CACHE = {
-  matrixCache: "",
-  controllersCache: ""
+  matrixCache: "[]",
+  controllersCache: "[]"
 }
 
 // simple cache mechanism that never delays a request...
