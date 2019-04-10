@@ -38,7 +38,7 @@ export function getAll() {
 
 export async function getControllerDetail(id: string) {
   var db = client.db(dbName);
-  return await db.collection('gamepads').aggregate([
+  var raw = await db.collection('gamepads').aggregate([
     {$match: {"data.gamepad.id": id}},
     {$limit: 1},
     {$project: {
@@ -48,6 +48,8 @@ export async function getControllerDetail(id: string) {
       mapping: "$data.gamepad.mapping",
     }}
   ]).toArray();
+
+  return raw[0];
 }
 
 export async function getControllers() {
@@ -72,7 +74,7 @@ export async function getControllers() {
     }
   ]).toArray();
 
-  return raw[0];
+  return raw;
 }
 
 export async function getMatrix() {
