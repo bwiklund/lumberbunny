@@ -1,6 +1,7 @@
 import * as bodyParser from 'body-parser';
 import cors from "cors";
 import express from "express";
+import { CACHE, getAll, logBlob } from './src/api';
 
 process.on('unhandledRejection', (reason: any, promise) => {
   console.log('Unhandled Rejection at:', reason ? reason.stack : reason);
@@ -31,11 +32,11 @@ app.get('/logs/all', async (req, res) => {
 });
 
 app.get('/logs/matrix', async (req, res) => {
-  res.send(matrixCache);
+  res.send(CACHE.matrixCache);
 });
 
 app.get('/logs/controllers', async (req, res) => {
-  res.send(controllersCache);
+  res.send(CACHE.controllersCache);
 });
 
 app.listen(3001);

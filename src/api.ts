@@ -14,17 +14,43 @@ client.connect(() => {
   setInterval(updateCache, 10 * 60 * 1000);
 });
 
-function logBlob(logItem: {}) {
+export const CACHE = {
+  matrixCache: "",
+  controllersCache: ""
+}
+
+// simple cache mechanism that never delays a request...
+
+async function updateCache() {
+  CACHE.matrixCache = JSON.stringify(await getMatrix());
+  CACHE.controllersCache = JSON.stringify(await getControllers());
+}
+
+export function logBlob(logItem: {}) {
   var db = client.db(dbName);
   return db.collection('gamepads').insertOne(logItem);
 }
 
-function getAll() {
+export function getAll() {
   var db = client.db(dbName);
   return db.collection('gamepads').find().toArray();
 }
 
-async function getControllers() {
+export async function getControllerDetail(id: string) {
+  var db = client.db(dbName);
+  return db.collection('gamepads').aggregate([
+    {$match: {"data.gamepad.id": "Saitek Heavy Eqpt. Wheel & Pedal (Vendor: 0738 Product: 2217)"}},
+    {$limit: 1},
+    {$project: {
+      id: "$data.gamepad.id",
+      axesCount: {$size: "$data.gamepad.axes"},
+      buttonsCount: {$size: "$data.gamepad.buttons"},
+      mapping: "$data.gamepad.mapping",
+    }}
+  ])
+}
+
+export async function getControllers() {
   var db = client.db(dbName);
 
   var raw = await db.collection('gamepads').aggregate([
@@ -49,7 +75,7 @@ async function getControllers() {
   return raw;
 }
 
-async function getMatrix() {
+export async function getMatrix() {
   var db = client.db(dbName);
 
   var raw = await db.collection('gamepads').aggregate([
