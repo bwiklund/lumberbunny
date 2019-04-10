@@ -1,7 +1,7 @@
 import * as bodyParser from 'body-parser';
 import cors from "cors";
 import express from "express";
-import { CACHE, getAll, logBlob } from './src/api';
+import { CACHE, getAll, logBlob, getControllerDetail } from './src/api';
 
 process.on('unhandledRejection', (reason: any, promise) => {
   console.log('Unhandled Rejection at:', reason ? reason.stack : reason);
@@ -28,7 +28,7 @@ app.post('/logs/blobs', async (req, res) => {
 
 app.get('/logs/all', async (req, res) => {
   var blobs: any[] = await getAll();
-  res.send(JSON.stringify(blobs));
+  res.send(blobs);
 });
 
 app.get('/logs/matrix', async (req, res) => {
@@ -37,6 +37,11 @@ app.get('/logs/matrix', async (req, res) => {
 
 app.get('/logs/controllers', async (req, res) => {
   res.send(CACHE.controllersCache);
+});
+
+app.get('/logs/controllers/:id', async (req, res) => {
+  var data = await getControllerDetail(req.params.id)
+  res.send(data);
 });
 
 app.listen(3001);

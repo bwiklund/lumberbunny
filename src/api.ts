@@ -38,8 +38,8 @@ export function getAll() {
 
 export async function getControllerDetail(id: string) {
   var db = client.db(dbName);
-  return db.collection('gamepads').aggregate([
-    {$match: {"data.gamepad.id": "Saitek Heavy Eqpt. Wheel & Pedal (Vendor: 0738 Product: 2217)"}},
+  return await db.collection('gamepads').aggregate([
+    {$match: {"data.gamepad.id": id}},
     {$limit: 1},
     {$project: {
       id: "$data.gamepad.id",
@@ -47,7 +47,7 @@ export async function getControllerDetail(id: string) {
       buttonsCount: {$size: "$data.gamepad.buttons"},
       mapping: "$data.gamepad.mapping",
     }}
-  ])
+  ]).toArray();
 }
 
 export async function getControllers() {
@@ -72,7 +72,7 @@ export async function getControllers() {
     }
   ]).toArray();
 
-  return raw;
+  return raw[0];
 }
 
 export async function getMatrix() {
