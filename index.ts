@@ -1,5 +1,5 @@
 import { createContext } from "./src/context";
-import { server } from "./src/server";
+import { createServer } from "./src/server";
 import { updateCache } from "./src/api";
 
 process.on("unhandledRejection", (reason: any, promise) => {
@@ -13,11 +13,8 @@ const dbName = "gamepads";
 
 async function start() {
   const ctx = await createContext({ dbHost, dbName });
+  const server = createServer(ctx);
   server.listen(3001);
-  server.use((req, res, next) => {
-    req.ctx = ctx;
-    next();
-  });
 
   updateCache(ctx);
   setInterval(() => updateCache(ctx), 10 * 60 * 1000);
