@@ -5,9 +5,6 @@ interface BrowserSupportData {
   [s: string]: { [s: string]: number };
 }
 
-// updateCache();
-// setInterval(updateCache, 10 * 60 * 1000);
-
 export const CACHE = {
   matrixCache: "[]",
   controllersCache: "[]"

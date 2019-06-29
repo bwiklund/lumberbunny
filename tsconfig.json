@@ -4,6 +4,5 @@
     "module": "commonjs",
     "strict": true,
     "esModuleInterop": true
-  },
-  "files": ["./custom.d.ts"]
+  }
 }
