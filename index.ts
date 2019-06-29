@@ -14,7 +14,10 @@ const dbName = "gamepads";
 async function start() {
   const ctx = await createContext({ dbHost, dbName });
   server.listen(3001);
-  server.use((req, res) => (req.ctx = ctx));
+  server.use((req, res, next) => {
+    req.ctx = ctx;
+    next();
+  });
 
   updateCache(ctx);
   setInterval(() => updateCache(ctx), 10 * 60 * 1000);
