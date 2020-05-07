@@ -17,7 +17,7 @@ async function start() {
   server.listen(3001);
 
   updateCache(ctx);
-  setInterval(() => updateCache(ctx), 10 * 60 * 1000);
+  setInterval(() => updateCache(ctx), 24 * 60 * 60 * 1000); // update once daily
 }
 
 start();
