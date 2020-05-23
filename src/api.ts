@@ -1,4 +1,5 @@
 import * as useragent from "useragent";
+import { each } from "async";
 import { Ctx } from "./context";
 
 interface BrowserSupportData {
@@ -98,7 +99,7 @@ export async function getMatrix(ctx: Ctx) {
     .toArray();
 
   var byUserAgent: BrowserSupportData = {};
-  raw.forEach((r) => {
+  await each(raw, (r) => {
     var json = useragent.parse(r._id["user-agent"]).toJSON();
 
     if (!byUserAgent[json.family]) byUserAgent[json.family] = {};
