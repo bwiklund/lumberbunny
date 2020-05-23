@@ -1,5 +1,4 @@
 import * as useragent from "useragent";
-import { each } from "async";
 import { Ctx } from "./context";
 
 interface BrowserSupportData {
@@ -98,14 +97,25 @@ export async function getMatrix(ctx: Ctx) {
     ])
     .toArray();
 
-  var byUserAgent: BrowserSupportData = {};
-  await each(raw, (r) => {
-    var json = useragent.parse(r._id["user-agent"]).toJSON();
+  return await new Promise<any>((resolve) => {
+    var byUserAgent: BrowserSupportData = {};
 
-    if (!byUserAgent[json.family]) byUserAgent[json.family] = {};
-    if (!byUserAgent[json.family][json.major])
-      byUserAgent[json.family][json.major] = 0;
-    byUserAgent[json.family][json.major] += r.total;
+    let i = 0;
+    function step() {
+      const r = raw[i++];
+      const json = useragent.parse(r._id["user-agent"]).toJSON();
+
+      if (!byUserAgent[json.family]) byUserAgent[json.family] = {};
+      if (!byUserAgent[json.family][json.major])
+        byUserAgent[json.family][json.major] = 0;
+      byUserAgent[json.family][json.major] += r.total;
+
+      if (i >= raw.length) {
+        resolve(byUserAgent);
+      } else {
+        setImmediate(step);
+      }
+    }
+    step();
   });
-  return byUserAgent;
 }
