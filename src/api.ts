@@ -7,7 +7,7 @@ interface BrowserSupportData {
 
 export const CACHE = {
   matrixCache: "[]",
-  controllersCache: "[]"
+  controllersCache: "[]",
 };
 
 // simple cache mechanism that never delays a request...
@@ -22,10 +22,7 @@ export function logBlob(ctx: Ctx, logItem: {}) {
 }
 
 export function getAll(ctx: Ctx) {
-  return ctx.db
-    .collection("gamepads")
-    .find()
-    .toArray();
+  return ctx.db.collection("gamepads").find().toArray();
 }
 
 export async function getControllerDetail(ctx: Ctx, id: string) {
@@ -39,9 +36,9 @@ export async function getControllerDetail(ctx: Ctx, id: string) {
           id: "$data.gamepad.id",
           axesCount: { $size: "$data.gamepad.axes" },
           buttonsCount: { $size: "$data.gamepad.buttons" },
-          mapping: "$data.gamepad.mapping"
-        }
-      }
+          mapping: "$data.gamepad.mapping",
+        },
+      },
     ])
     .toArray();
 
@@ -54,20 +51,20 @@ export async function getControllers(ctx: Ctx) {
     .aggregate([
       {
         $match: {
-          "data.gamepad.id": { $exists: 1 }
-        }
+          "data.gamepad.id": { $exists: 1 },
+        },
       },
       {
         $group: {
           _id: "$data.gamepad.id",
-          total: { $sum: 1 }
-        }
+          total: { $sum: 1 },
+        },
       },
       {
         $sort: {
-          total: -1
-        }
-      }
+          total: -1,
+        },
+      },
     ])
     .toArray();
 
@@ -80,32 +77,29 @@ export async function getMatrix(ctx: Ctx) {
     .aggregate([
       {
         $match: {
-          "data.gamepad.id": { $exists: 1 }
-        }
+          "data.gamepad.id": { $exists: 1 },
+        },
       },
       {
         $group: {
           _id: {
             gamepadId: "$data.gamepad.id",
-            "user-agent": "$headers.user-agent"
+            "user-agent": "$headers.user-agent",
           },
-          total: { $sum: 1 }
-        }
+          total: { $sum: 1 },
+        },
       },
       {
         $sort: {
-          total: 1
-        }
-      }
+          total: 1,
+        },
+      },
     ])
     .toArray();
 
   var byUserAgent: BrowserSupportData = {};
-  raw.forEach(r => {
-    var ua = useragent.parse(r._id["user-agent"]).toAgent();
+  raw.forEach((r) => {
     var json = useragent.parse(r._id["user-agent"]).toJSON();
-
-    var gamepadId = r._id.gamepadId;
 
     if (!byUserAgent[json.family]) byUserAgent[json.family] = {};
     if (!byUserAgent[json.family][json.major])
