@@ -12,6 +12,8 @@ services:
   mongo:
     image: "mongo"
     command: [--auth]
+    ports: 
+      - 27017:27017
     env_file:
       - .env
     volumes:
