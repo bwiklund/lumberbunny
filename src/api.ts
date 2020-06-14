@@ -16,7 +16,7 @@ export const CACHE = {
 export async function updateCache(ctx: Ctx) {
   CACHE.matrixCache = JSON.stringify(await getMatrix(ctx));
   CACHE.controllersCache = JSON.stringify(await getControllers(ctx));
-  CACHE.top25 = JSON.stringify(await getControllers(ctx, 25));
+  CACHE.top25 = JSON.stringify(await getControllers(ctx, [{ $limit: 25 }]));
 }
 
 export function logBlob(ctx: Ctx, logItem: {}) {
@@ -47,7 +47,7 @@ export async function getControllerDetail(ctx: Ctx, id: string) {
   return raw[0];
 }
 
-export async function getControllers(ctx: Ctx, $limit?: number) {
+export async function getControllers(ctx: Ctx, aggArgs: any[] = []) {
   var raw = await ctx.db
     .collection("gamepads")
     .aggregate([
@@ -67,7 +67,7 @@ export async function getControllers(ctx: Ctx, $limit?: number) {
           total: -1,
         },
       },
-      { $limit },
+      ...aggArgs,
     ])
     .toArray();
 
