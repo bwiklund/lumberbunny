@@ -8,6 +8,7 @@ interface BrowserSupportData {
 export const CACHE = {
   matrixCache: "[]",
   controllersCache: "[]",
+  top25: "[]",
 };
 
 // simple cache mechanism that never delays a request...
@@ -15,6 +16,7 @@ export const CACHE = {
 export async function updateCache(ctx: Ctx) {
   CACHE.matrixCache = JSON.stringify(await getMatrix(ctx));
   CACHE.controllersCache = JSON.stringify(await getControllers(ctx));
+  CACHE.top25 = JSON.stringify(await getControllers(ctx, 25));
 }
 
 export function logBlob(ctx: Ctx, logItem: {}) {
@@ -45,7 +47,7 @@ export async function getControllerDetail(ctx: Ctx, id: string) {
   return raw[0];
 }
 
-export async function getControllers(ctx: Ctx) {
+export async function getControllers(ctx: Ctx, $limit?: number) {
   var raw = await ctx.db
     .collection("gamepads")
     .aggregate([
@@ -65,6 +67,7 @@ export async function getControllers(ctx: Ctx) {
           total: -1,
         },
       },
+      { $limit },
     ])
     .toArray();
 

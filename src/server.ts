@@ -19,7 +19,7 @@ export function createServer(ctx: Ctx) {
     var logItem = {
       data: req.body,
       ip: req.ip,
-      headers: req.headers
+      headers: req.headers,
     };
     await logBlob(ctx, logItem);
     res.send("thanks");
@@ -36,6 +36,10 @@ export function createServer(ctx: Ctx) {
 
   server.get("/logs/controllers", async (req, res) => {
     res.send(CACHE.controllersCache);
+  });
+
+  server.get("/logs/top", async (req, res) => {
+    res.send(CACHE.top25);
   });
 
   server.get("/logs/controllers/:id", async (req, res) => {
