@@ -50,25 +50,28 @@ export async function getControllerDetail(ctx: Ctx, id: string) {
 export async function getControllers(ctx: Ctx, aggArgs: any[] = []) {
   var raw = await ctx.db
     .collection("gamepads")
-    .aggregate([
-      {
-        $match: {
-          "data.gamepad.id": { $exists: 1 },
+    .aggregate(
+      [
+        {
+          $match: {
+            "data.gamepad.id": { $exists: 1 },
+          },
         },
-      },
-      {
-        $group: {
-          _id: "$data.gamepad.id",
-          total: { $sum: 1 },
+        {
+          $group: {
+            _id: "$data.gamepad.id",
+            total: { $sum: 1 },
+          },
         },
-      },
-      {
-        $sort: {
-          total: -1,
+        {
+          $sort: {
+            total: -1,
+          },
         },
-      },
-      ...aggArgs,
-    ])
+        ...aggArgs,
+      ],
+      { allowDiskUse: true }
+    )
     .toArray();
 
   return raw;
@@ -77,27 +80,30 @@ export async function getControllers(ctx: Ctx, aggArgs: any[] = []) {
 export async function getMatrix(ctx: Ctx) {
   var raw = await ctx.db
     .collection("gamepads")
-    .aggregate([
-      {
-        $match: {
-          "data.gamepad.id": { $exists: 1 },
-        },
-      },
-      {
-        $group: {
-          _id: {
-            gamepadId: "$data.gamepad.id",
-            "user-agent": "$headers.user-agent",
+    .aggregate(
+      [
+        {
+          $match: {
+            "data.gamepad.id": { $exists: 1 },
           },
-          total: { $sum: 1 },
         },
-      },
-      {
-        $sort: {
-          total: 1,
+        {
+          $group: {
+            _id: {
+              gamepadId: "$data.gamepad.id",
+              "user-agent": "$headers.user-agent",
+            },
+            total: { $sum: 1 },
+          },
         },
-      },
-    ])
+        {
+          $sort: {
+            total: 1,
+          },
+        },
+      ],
+      { allowDiskUse: true }
+    )
     .toArray();
 
   return await new Promise<any>((resolve) => {
