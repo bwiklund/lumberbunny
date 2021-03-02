@@ -14,8 +14,8 @@ export const CACHE = {
 // simple cache mechanism that never delays a request...
 
 export async function updateCache(ctx: Ctx) {
-  CACHE.matrixCache = JSON.stringify(await getMatrix(ctx));
-  CACHE.controllersCache = JSON.stringify(await getControllers(ctx));
+  // CACHE.matrixCache = JSON.stringify(await getMatrix(ctx));
+  // CACHE.controllersCache = JSON.stringify(await getControllers(ctx));
   CACHE.top25 = JSON.stringify(await getControllers(ctx, [{ $limit: 25 }]));
 }
 

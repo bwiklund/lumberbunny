@@ -25,26 +25,46 @@ export function createServer(ctx: Ctx) {
     res.send("thanks");
   });
 
-  server.get("/logs/all", async (req, res) => {
-    var blobs: any[] = await getAll(ctx);
-    res.send(blobs);
-  });
-
-  server.get("/logs/matrix", async (req, res) => {
-    res.send(CACHE.matrixCache);
-  });
-
-  server.get("/logs/controllers", async (req, res) => {
-    res.send(CACHE.controllersCache);
-  });
-
   server.get("/logs/top", async (req, res) => {
     res.send(CACHE.top25);
   });
 
+  server.get("/logs/all", async (req, res) => {
+    res
+      .status(401)
+      .send(
+        "Unauthorized. Please contact sales at contact@humanbenchmark.com for dataset access."
+      );
+    // var blobs: any[] = await getAll(ctx);
+    // res.send(blobs);
+  });
+
+  server.get("/logs/matrix", async (req, res) => {
+    res
+      .status(401)
+      .send(
+        "Unauthorized. Please contact sales at contact@humanbenchmark.com for dataset access."
+      );
+    // res.send(CACHE.matrixCache);
+  });
+
+  server.get("/logs/controllers", async (req, res) => {
+    res
+      .status(401)
+      .send(
+        "Unauthorized. Please contact sales at contact@humanbenchmark.com for dataset access."
+      );
+    // res.send(CACHE.controllersCache);
+  });
+
   server.get("/logs/controllers/:id", async (req, res) => {
-    var data = await getControllerDetail(ctx, req.params.id);
-    res.send(data);
+    res
+      .status(401)
+      .send(
+        "Unauthorized. Please contact sales at contact@humanbenchmark.com for dataset access."
+      );
+    // var data = await getControllerDetail(ctx, req.params.id);
+    // res.send(data);
   });
 
   return server;
